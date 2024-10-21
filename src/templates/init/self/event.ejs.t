@@ -10,6 +10,5 @@ to: demo/events/<%%%=event%>.ts
 
 // <%%%= slice %>
 class <%%%=event%> {
-    val aggregateId: UUID
     <%%%=fields%>
 }
