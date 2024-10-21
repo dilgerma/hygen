@@ -1,4 +1,7 @@
 ---
+to: _templates/generator/demo/event.ejs.t
+---
+---
 to: _templates/demo/events/event.ejs.t
 ---
 ---

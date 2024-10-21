@@ -1,4 +1,7 @@
 ---
+to: _templates/generator/demo/index.js.t
+---
+---
 to: _templates/demo/events/index.js
 ---
 var renderEvent = async (folder, slice, event, config, jsonConfig, renderFile)=>{
