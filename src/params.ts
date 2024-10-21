@@ -47,6 +47,7 @@ const resolvePositionals = async (templates: string, args: string[]) => {
 const params = async (
   { templates, createPrompter }: RunnerConfig,
   externalArgv: string[],
+  jsonConfig?: any
 ): Promise<ParamsResult> => {
   const argv = yargs(externalArgv)
 
@@ -65,6 +66,7 @@ const params = async (
     // but theres no usecase yet
     ...(name ? { name } : {}),
     ...cleanArgv,
+    jsonConfig: jsonConfig
   })
 
   const args = Object.assign(

@@ -17,8 +17,12 @@ const ignores = [
   'prompt.js',
   'index.js',
   'prompt.ts',
+  'prepare.js',
   'index.ts',
   '.hygenignore',
+  'node_modules',
+  'package.json',
+  '_common',
   '.DS_Store',
   '.Spotlight-V100',
   '.Trashes',
@@ -42,12 +46,14 @@ const render = async (
   getFiles(args.actionfolder)
     .then((things) => things.sort((a, b) => a.localeCompare(b))) // TODO: add a test to verify this sort
     .then(filter((f) => !ignores.find((ig) => f.endsWith(ig)))) // TODO: add a
-    // test for ignoring prompt.js and index.js
+    // test for ignoring prompt.js and index.ejs.js.t
     .then(
-      filter((file) =>
-        args.subaction
-          ? file.replace(args.actionfolder, '').match(args.subaction)
-          : true,
+      filter((file) => {
+          // listing all files in _templates / action folder
+          return args.subaction
+            ? file.replace(args.actionfolder, '').match(args.subaction)
+            : true
+        }
       ),
     )
     .then(
@@ -58,12 +64,14 @@ const render = async (
     .then((_) => Promise.all(_))
     .then(
       map(({ file, text }) => {
-        debug('Pre-formatting file: %o', file)
+        // formats to {"attributes":{"to":"app/hello.js"},"body":"<%= name%>\n\n\n","bodyBegin":5,"frontmatter":"to: app/hello.js"}
         return { file, ...fm(text, { allowUnsafe: true }) }
       }),
     )
     .then(
       map(({ file, attributes, body }) => {
+        // renders the front matter attributes
+        //{"to":"app/hello.js"}
         const renderedAttrs = Object.entries(attributes).reduce(
           (obj, [key, value]) => {
             return {
@@ -73,7 +81,7 @@ const render = async (
           },
           {},
         )
-        debug('Rendering file: %o', file)
+        //TODO - here we render the body - access the attributes
         return {
           file,
           attributes: renderedAttrs,

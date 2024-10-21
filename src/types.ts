@@ -23,7 +23,7 @@ export interface RunnerConfig {
   debug?: boolean
   helpers?: any
   localsDefaults?: any
-  createPrompter?: <Q, T>() => Prompter<Q, T>
+  createPrompter?: <Q, T>() => Prompter<Q, T>,
 }
 
 export interface ResolverIO {

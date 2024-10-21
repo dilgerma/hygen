@@ -1,8 +1,5 @@
 ---
-to: _templates/generator/with-prompt/prompt.ejs.t
----
----
-to: _templates/<%%= name %%>/<%%= action || 'new' %%>/prompt.js
+to: _templates/<%= name %>/<%= action || 'new' %>/prompt.js
 ---
 
 // see types of prompts:

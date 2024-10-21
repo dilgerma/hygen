@@ -1,6 +1,6 @@
 {
-  "name": "hygen",
-  "version": "6.2.11",
+  "name": "@dilgerma/hygenx",
+  "version": "6.3.7",
   "description": "The scalable code generator that saves you time.",
   "keywords": [
     "template",
@@ -22,7 +22,8 @@
     "build:changelog": "conventional-changelog -i CHANGELOG.md -p angular > CHANGELOG.md",
     "build:lib": "tsc",
     "build": "yarn build:lib && yarn build:changelog",
-    "release": "yarn build && git commit -am 'build'; yarn version && git push --tags && git push origin master",
+    "release": "npm version patch && npm publish --access public",
+    "docker-release": "docker build -t ghcr.io/dilgerma/nebulit-code-gen --secret id=npmrc,src=$HOME/.npmrc . && docker push ghcr.io/dilgerma/nebulit-code-gen",
     "test:win32": "yarn jest --runInBand --testPathIgnorePatterns '.*metaverse-conditional.*'",
     "test": "yarn test:code && yarn test:require",
     "test:code": "yarn jest --runInBand",

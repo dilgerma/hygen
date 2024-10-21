@@ -47,6 +47,7 @@ const prompt = async <Q, T>(
       inquirer: prompter,
       args,
       h: helpers,
+      jsonConfig: args.jsonConfig
     })
   }
 

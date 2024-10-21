@@ -70,6 +70,7 @@ const prompt = (createPrompter, actionfolder, args) => __awaiter(void 0, void 0,
             inquirer: prompter,
             args,
             h: helpers_1.default,
+            jsonConfig: args.jsonConfig
         });
     }
     return prompter.prompt(

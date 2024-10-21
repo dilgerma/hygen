@@ -11,11 +11,19 @@ const execute = async (
   const { logger } = config
   const messages = []
   const results = []
+  /*
+  [{"file":"/private/tmp/_templates/axon/slice/hello.ejs.t",
+  "attributes":{"to":"app/hello.js"},
+  "body":"foo\n\n\n"},
+  {"file":"/private/tmp/_templates/axon/slice/hello2.ejs.t",
+  "attributes":{"to":"app/hello.js"},"body":"foo\n\n\n"}]
+   */
   for (const action of renderedActions) {
     const { message } = action.attributes
     if (message) {
       messages.push(message)
     }
+    // resolves the actions like sh, echo, etc.
     const ops = await resolve(action.attributes)
     debug('executing %o ops', ops.length)
     for (const op of ops) {

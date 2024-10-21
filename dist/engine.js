@@ -34,6 +34,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShowHelpError = void 0;
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const params_1 = __importDefault(require("./params"));
+const config_1 = require("./config");
+const path_1 = __importDefault(require("path"));
 class ShowHelpError extends Error {
     constructor(message) {
         super(message);
@@ -43,7 +45,13 @@ class ShowHelpError extends Error {
 exports.ShowHelpError = ShowHelpError;
 const engine = (argv, config) => __awaiter(void 0, void 0, void 0, function* () {
     const { cwd, templates, logger } = config;
-    const args = Object.assign(yield (0, params_1.default)(config, argv), { cwd });
+    let configJsonResolver = new config_1.ConfigResolver('config.json', {
+        exists: fs_extra_1.default.exists,
+        load: (f) => __awaiter(void 0, void 0, void 0, function* () { return yield Promise.resolve().then(() => __importStar(require(f))); }),
+        none: (_) => ({}),
+    });
+    let configJson = yield configJsonResolver.resolve(cwd);
+    const args = Object.assign(yield (0, params_1.default)(config, argv, configJson), { cwd });
     const { generator, action, actionfolder } = args;
     if (['-h', '--help'].includes(argv[0])) {
         logger.log(`
@@ -77,6 +85,24 @@ Options:
     // a user is exploring hygen (not specifying what to execute)
     const execute = (yield Promise.resolve().then(() => __importStar(require('./execute')))).default;
     const render = (yield Promise.resolve().then(() => __importStar(require('./render')))).default;
-    return execute(yield render(args, config), args, config);
+    const hooksfile = path_1.default.resolve(path_1.default.join(args.actionfolder, 'index.js'));
+    //@ts-ignore
+    if (fs_extra_1.default.existsSync(hooksfile)) {
+        let hooksModule = yield Promise.resolve().then(() => __importStar(require(hooksfile)));
+        if (hooksModule.default) {
+            hooksModule = hooksModule.default;
+        }
+        if (hooksModule.render) {
+            const renderFile = (yield Promise.resolve().then(() => __importStar(require('./renderFile')))).default;
+            //@ts-ignore
+            return execute(yield hooksModule.render(args.actionfolder, args, configJson, config, renderFile), args, config);
+        }
+        else {
+            return execute(yield render(args, config), args, config);
+        }
+    }
+    else {
+        return execute(yield render(args, config), args, config);
+    }
 });
 exports.default = engine;

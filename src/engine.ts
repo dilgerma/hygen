@@ -1,6 +1,10 @@
 import fs from 'fs-extra'
 import type { ActionResult, RunnerConfig } from './types'
 import params from './params'
+import { ConfigResolver } from './config'
+import path from 'path'
+import { json } from 'node:stream/consumers'
+import helpers from './helpers'
 
 class ShowHelpError extends Error {
   constructor(message: string) {
@@ -13,8 +17,17 @@ const engine = async (
   argv: string[],
   config: RunnerConfig,
 ): Promise<ActionResult[]> => {
+
+
   const { cwd, templates, logger } = config
-  const args = Object.assign(await params(config, argv), { cwd })
+
+  let configJsonResolver = new ConfigResolver('config.json', {
+    exists: fs.exists,
+    load: async (f) => await import(f),
+    none: (_) => ({}),
+  })
+  let configJson = await configJsonResolver.resolve(cwd)
+  const args = Object.assign(await params(config, argv, configJson), { cwd })
   const { generator, action, actionfolder } = args
 
   if (['-h', '--help'].includes(argv[0])) {
@@ -53,7 +66,28 @@ Options:
   // a user is exploring hygen (not specifying what to execute)
   const execute = (await import('./execute')).default
   const render = (await import('./render')).default
-  return execute(await render(args, config), args, config)
+
+  const hooksfile = path.resolve(path.join(args.actionfolder, 'index.js'))
+  //@ts-ignore
+  if (fs.existsSync(hooksfile)) {
+    let hooksModule = await import(hooksfile)
+    if (hooksModule.default) {
+      hooksModule = hooksModule.default
+    }
+
+    if (hooksModule.render) {
+      const renderFile = (await import('./renderFile')).default
+      //@ts-ignore
+       return execute(await hooksModule.render(args.actionfolder, args, configJson, config, renderFile), args, config)
+    } else {
+      return execute(await render(args, config), args, config)
+
+    }
+  } else {
+    return execute(await render(args, config), args, config)
+  }
+
+
 }
 
 export { ShowHelpError }

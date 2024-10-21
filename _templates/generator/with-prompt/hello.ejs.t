@@ -1,8 +1,5 @@
 ---
-to: _templates/generator/with-prompt/hello.ejs.t
----
----
-to: _templates/<%%= name %%>/<%%= action || 'new' %%>/hello.ejs.t
+to: _templates/<%= name %>/<%= action || 'new' %>/hello.ejs.t
 ---
 ---
 to: app/hello.js
