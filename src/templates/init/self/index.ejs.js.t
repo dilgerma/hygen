@@ -9,7 +9,7 @@ var renderEvent = async (folder, slice, event, config, jsonConfig, renderFile)=>
             slice: slice,
             event: event.title?.replaceAll(" ",""),
             fields: event.fields.map(field => {
-                return `${field.name}:string = null`
+                return `\t${field.name}:string = null`
             }).join("\n")
         }
     )
