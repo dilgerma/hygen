@@ -10,7 +10,7 @@ var renderEvent = async (folder, slice, event, config, jsonConfig, renderFile)=>
         config,
         {
             slice: slice,
-            event: event.title,
+            event: event.title?.replaceAll(" ",""),
             fields: event.fields
         }
     )
